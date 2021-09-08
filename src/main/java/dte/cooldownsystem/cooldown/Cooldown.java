@@ -142,6 +142,24 @@ public class Cooldown
 	{
 		return Optional.ofNullable(this.defaultTime);
 	}
+	
+	/**
+	 * If the provided {@code player} is not on this cooldown, nothing happens and false is returned.
+	 * Otherwise, This cooldown's rejection strategy would be called on the player and this method returns true.
+	 * 
+	 * @param player The potentially on cooldown player.
+	 * @return Whether the player was rejected or not.
+	 */
+	public boolean isRejecting(Player player) 
+	{
+		UUID playerUUID = player.getUniqueId();
+		
+		if(!isOnCooldown(playerUUID))
+			return false;
+		
+		this.rejectionStrategy.accept(playerUUID, this);
+		return true;
+	}
 
 	/**
 	 * Returns what happens when this cooldown is over for someone.
