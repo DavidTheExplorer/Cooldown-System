@@ -2,22 +2,27 @@ package dte.cooldownsystem.cooldown.future.factory;
 
 import java.util.function.BiConsumer;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import dte.cooldownsystem.cooldown.Cooldown;
 import dte.cooldownsystem.cooldown.future.CooldownFuture;
-import dte.cooldownsystem.cooldown.future.PlayerConsumerFuture;
-import dte.cooldownsystem.cooldown.future.RejectWithMessageFuture;
+import dte.cooldownsystem.utils.time.DurationUtils;
 
 public class CooldownFutureFactory 
 {
 	//Container of static factory methods
 	private CooldownFutureFactory(){}
+	
+	//Placeholders
+	public static final String
+	PLAYER_PLACEHOLDER = "%player%",
+	TIME_PLACEHOLDER = "%time%";
 
 	//Cached Stateless Futures
 	public static final CooldownFuture 
 	DO_NOTHING = (player, playerCooldown) -> {},
-	DEFAULT_MESSAGE = message(String.format("Your cooldown will be over in %s.", RejectWithMessageFuture.TIME_PLACEHOLDER));
+	DEFAULT_MESSAGE = message(String.format("Your cooldown will be over in %s.", TIME_PLACEHOLDER));
 	
 	/**
 	 * Creates a {@code CooldownFuture} that runs the provided {@code player action} on the player passed by their UUID <b>only</b> if the player is online.
@@ -27,7 +32,15 @@ public class CooldownFutureFactory
 	 */
 	public static CooldownFuture ifOnline(BiConsumer<Player, Cooldown> playerAction) 
 	{
-		return new PlayerConsumerFuture(playerAction);
+		return (playerUUID, playerCooldown) -> 
+		{
+			Player player = Bukkit.getPlayer(playerUUID);
+			
+			if(player == null)
+				return;
+			
+			playerAction.accept(player, playerCooldown);
+		};
 	}
 
 	/**
@@ -42,6 +55,23 @@ public class CooldownFutureFactory
 	 */
 	public static CooldownFuture message(String message) 
 	{
-		return new RejectWithMessageFuture(message);
+		return ifOnline((player, playerCooldown) ->
+		{
+			String finalMessage = replacePlaceholders(player, playerCooldown, message);
+			
+			player.sendMessage(finalMessage);
+		});
+	}
+	
+	private static String replacePlaceholders(Player player, Cooldown playerCooldown, String message) 
+	{
+		String elegantTimeLeft = playerCooldown.getTimeLeft(player)
+				.map(DurationUtils::describe)
+				.get();
+		
+		message = message.replace(PLAYER_PLACEHOLDER, player.getName());
+		message = message.replace(TIME_PLACEHOLDER, elegantTimeLeft);
+		
+		return message;
 	}
 }
