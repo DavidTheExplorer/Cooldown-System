@@ -2,46 +2,76 @@ package dte.cooldownsystem.cooldown.future.factory;
 
 import java.util.function.BiConsumer;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import dte.cooldownsystem.cooldown.Cooldown;
 import dte.cooldownsystem.cooldown.future.CooldownFuture;
-import dte.cooldownsystem.cooldown.future.PlayerConsumerFuture;
-import dte.cooldownsystem.cooldown.future.RejectWithMessageFuture;
+import dte.cooldownsystem.utils.time.DurationUtils;
 
 public class CooldownFutureFactory 
 {
 	//Container of static factory methods
 	private CooldownFutureFactory(){}
+	
+	//Placeholders
+	public static final String
+	PLAYER_PLACEHOLDER = "%player%",
+	TIME_PLACEHOLDER = "%time%";
 
 	//Cached Stateless Futures
 	public static final CooldownFuture 
 	DO_NOTHING = (player, playerCooldown) -> {},
-	DEFAULT_MESSAGE = message(String.format("Your cooldown will be over in %s.", RejectWithMessageFuture.TIME_PLACEHOLDER));
+	DEFAULT_MESSAGE = message(String.format("Your cooldown will be over in %s.", TIME_PLACEHOLDER));
 	
 	/**
-	 * Creates a future that requires a player, from an {@code action} that accepts the player.
+	 * Creates a {@code CooldownFuture} that runs the provided {@code player action} on the player passed by their UUID <b>only</b> if the player is online.
 	 * 
-	 * @param playerAction The action to run if the player is online.
+	 * @param playerAction The action to run on the online player.
 	 * @return The created future.
 	 */
 	public static CooldownFuture ifOnline(BiConsumer<Player, Cooldown> playerAction) 
 	{
-		return new PlayerConsumerFuture(playerAction);
+		return (playerUUID, playerCooldown) -> 
+		{
+			Player player = Bukkit.getPlayer(playerUUID);
+			
+			if(player == null)
+				return;
+			
+			playerAction.accept(player, playerCooldown);
+		};
 	}
 
 	/**
-	 * Creates a future that sends a message to the player, which accepts the following Placeholders:
+	 * Creates a {@code CooldownFuture} that sends a message to the player, with the following Placeholders:
 	 * <nl>
 	 * 	<li><i>%time%</i> - the remaining time of the player.
 	 * 	<li><i>%player%</i> - the player's name.
 	 * </nl>
 	 * 
-	 * @param message The rejection message to send to the player.
+	 * @param message The message to send to the player.
 	 * @return The created messager future.
 	 */
 	public static CooldownFuture message(String message) 
 	{
-		return new RejectWithMessageFuture(message);
+		return ifOnline((player, playerCooldown) ->
+		{
+			String finalMessage = replacePlaceholders(player, playerCooldown, message);
+			
+			player.sendMessage(finalMessage);
+		});
+	}
+	
+	private static String replacePlaceholders(Player player, Cooldown playerCooldown, String message) 
+	{
+		String elegantTimeLeft = playerCooldown.getTimeLeft(player)
+				.map(DurationUtils::describe)
+				.get();
+		
+		message = message.replace(PLAYER_PLACEHOLDER, player.getName());
+		message = message.replace(TIME_PLACEHOLDER, elegantTimeLeft);
+		
+		return message;
 	}
 }
