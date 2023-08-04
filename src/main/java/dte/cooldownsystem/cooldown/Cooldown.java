@@ -28,13 +28,13 @@ import dte.cooldownsystem.cooldown.listeners.CooldownCreationListener;
 public class Cooldown
 {
 	private final Map<UUID, Instant> endDates = new HashMap<>();
-	private final CooldownFuture rejectionStrategy, whenOverStrategy;
+	private final CooldownFuture rejectionStrategy, whenOver;
 	private Duration defaultTime;
 
 	private Cooldown(Builder builder)
 	{
 		this.rejectionStrategy = builder.rejectionStrategy;
-		this.whenOverStrategy = builder.whenOverStrategy;
+		this.whenOver = builder.whenOver;
 		this.defaultTime = builder.defaultTime;
 	}
 
@@ -168,7 +168,7 @@ public class Cooldown
 	 */
 	public Optional<CooldownFuture> whenOver()
 	{
-		return Optional.of(this.whenOverStrategy);
+		return Optional.of(this.whenOver);
 	}
 
 	/**
@@ -208,8 +208,8 @@ public class Cooldown
 	{
 		CooldownFuture 
 		rejectionStrategy = CooldownFutureFactory.DO_NOTHING,
-		whenOverStrategy = CooldownFutureFactory.DO_NOTHING;
-		
+		whenOver = CooldownFutureFactory.DO_NOTHING;
+
 		Duration defaultTime;
 		
 		private static final List<CooldownCreationListener> CREATION_LISTENERS = new ArrayList<>();
@@ -231,9 +231,9 @@ public class Cooldown
 			return this;
 		}
 		
-		public Builder whenOver(CooldownFuture whenOverStrategy) 
+		public Builder whenOver(CooldownFuture whenOver) 
 		{
-			this.whenOverStrategy = whenOverStrategy;
+			this.whenOver = whenOver;
 			return this;
 		}
 		
