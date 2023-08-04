@@ -55,6 +55,8 @@ public class Cooldown
 	 * 
 	 * @param player The player to put on cooldown.
 	 * @throws UnsupportedOperationException If a default time wasn't set for this cooldown.
+	 * @see #setDefaultTime(Duration)
+	 * @see Builder#withDefaultTime(Duration)
 	 */
 	public void put(Player player) throws UnsupportedOperationException
 	{
@@ -67,7 +69,7 @@ public class Cooldown
 	 * Returns whether the provided {@code player} is on this cooldown.
 	 * 
 	 * @param player The player who will be checked.
-	 * @return true if the player was on cooldown, otherwise false.
+	 * @return whether the player was on cooldown.
 	 */
 	public boolean isOnCooldown(Player player)
 	{
@@ -108,10 +110,10 @@ public class Cooldown
 	}
 	
 	/**
-	 * Returns an Optional of the time left for provided {@code player} to be on this cooldown.
+	 * Returns the time left for provided player to be on this cooldown.
 	 * 
 	 * @param player The player on cooldown.
-	 * @return The player's time left of cooling down.
+	 * @return  The player's time left of cooling down(Empty Optional is returned if the player wasn't on cooldown)
 	 */
 	public Optional<Duration> getTimeLeft(Player player)
 	{
@@ -119,10 +121,10 @@ public class Cooldown
 	}
 
 	/**
-	 * Returns an Optional of the time left for provided player by their {@code uuid} to be on this cooldown.
+	 * Returns the time left for provided player to be on this cooldown.
 	 * 
 	 * @param playerUUID The uuid of player on cooldown.
-	 * @return The player's time left of cooling down.
+	 * @return The player's time left of cooling down(Empty Optional is returned if the player wasn't on cooldown)
 	 */
 	public Optional<Duration> getTimeLeft(UUID playerUUID)
 	{
@@ -130,17 +132,23 @@ public class Cooldown
 				.map(endDate -> Duration.between(Instant.now(), endDate));
 	}
 	
+	/**
+	 * Returns this cooldown's <i>default time</i> which is used when {@link #put(Player)} is called.
+	 * 
+	 * @return The default time of this cooldown.
+	 */
 	public Optional<Duration> getDefaultTime()
 	{
 		return Optional.ofNullable(this.defaultTime);
 	}
 	
 	/**
-	 * If the provided {@code player} is not on this cooldown, nothing happens and false is returned.
-	 * Otherwise, This cooldown's rejection strategy is called for the player and this method returns true.
+	 * If the provided {@code player} is on cooldown, the rejection strategy is called and this method returns true.
+	 * Otherwise, nothing happens and false is returned.
 	 * 
 	 * @param player The potentially on cooldown player.
 	 * @return Whether the player was rejected or not.
+	 * @see #getRejectionStrategy()
 	 */
 	public boolean isRejecting(Player player) 
 	{
@@ -166,19 +174,19 @@ public class Cooldown
 	}
 
 	/**
-	 * Returns the rejection strategy of this cooldown, which is called by {@link #wasRejected(Player)} for convenience.
+	 * Returns what happens when a player who is on cooldown is passed when {@link #wasRejected(Player)} is called.
 	 * 
-	 * @return the rejection strategy of this cooldown.
+	 * @return the rejection strategy of this cooldown, wrapped in an Optional.
 	 */
-	public CooldownFuture getRejectionStrategy() 
+	public Optional<CooldownFuture> getRejectionStrategy() 
 	{
-		return this.rejectionStrategy;
+		return Optional.ofNullable(this.rejectionStrategy);
 	}
 
 	/**
-	 * Returns a snapshot of the current players on this cooldown.
+	 * Returns a snapshot of the players on this cooldown.
 	 * 
-	 * @return The UUIDs of the current players on this cooldown.
+	 * @return The UUIDs of the players on this cooldown.
 	 */
 	public Set<UUID> getPlayersUUIDs()
 	{
