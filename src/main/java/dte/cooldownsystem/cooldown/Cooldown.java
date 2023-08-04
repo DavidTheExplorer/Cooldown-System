@@ -19,7 +19,6 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 
 import dte.cooldownsystem.cooldown.future.CooldownFuture;
-import dte.cooldownsystem.cooldown.future.factory.CooldownFutureFactory;
 import dte.cooldownsystem.cooldown.listeners.CooldownCreationListener;
 
 /**
@@ -138,13 +137,15 @@ public class Cooldown
 	
 	/**
 	 * If the provided {@code player} is not on this cooldown, nothing happens and false is returned.
-	 * Otherwise, This cooldown's rejection strategy would be called on the player and this method returns true.
+	 * Otherwise, This cooldown's rejection strategy is called for the player and this method returns true.
 	 * 
 	 * @param player The potentially on cooldown player.
 	 * @return Whether the player was rejected or not.
 	 */
 	public boolean isRejecting(Player player) 
 	{
+		Validate.notNull(this.rejectionStrategy, "The rejection strategy must be defined in case the player is on cooldown.");
+
 		UUID playerUUID = player.getUniqueId();
 		
 		if(!isOnCooldown(playerUUID))
@@ -199,10 +200,7 @@ public class Cooldown
 
 	public static class Builder
 	{
-		CooldownFuture 
-		rejectionStrategy = CooldownFutureFactory.DO_NOTHING,
-		whenOver = CooldownFutureFactory.DO_NOTHING;
-
+		CooldownFuture rejectionStrategy, whenOver;
 		Duration defaultTime;
 		
 		private static final List<CooldownCreationListener> CREATION_LISTENERS = new ArrayList<>();
@@ -232,8 +230,6 @@ public class Cooldown
 		
 		public Cooldown build()
 		{
-			Objects.requireNonNull(this.rejectionStrategy, "Can't create a cooldown without a Rejection Strategy!");
-			
 			Cooldown cooldown = new Cooldown(this);
 			CREATION_LISTENERS.forEach(listener -> listener.onCooldownCreated(cooldown));
 			
