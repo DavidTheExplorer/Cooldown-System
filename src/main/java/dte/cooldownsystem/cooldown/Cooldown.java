@@ -85,10 +85,6 @@ public class Cooldown
 	{
 		Instant endDate = this.endDates.getOrDefault(playerUUID, Instant.MIN);
 		
-		//if the player doesn't have a recorded time - they weren't put on cooldown
-		if(endDate == null) 
-			return false;
-		
 		return Instant.now().isBefore(endDate);
 	}
 
