@@ -92,13 +92,10 @@ public class Cooldown
 	 * Deletes the player provided by their {@code UUID} from this cooldown.
 	 * 
 	 * @param playerUUID The uuid of the player who will be removed.
-	 * @return true if the player had a recorded time on this cooldown(can have a time that passed), false otherwise.
 	 */
-	public boolean delete(UUID playerUUID)
+	public void delete(UUID playerUUID)
 	{
-		boolean wasOnCooldown = this.endDates.remove(playerUUID) == null;
-
-		return wasOnCooldown;
+		this.endDates.remove(playerUUID);
 	}
 
 	/**
