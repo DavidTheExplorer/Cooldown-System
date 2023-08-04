@@ -4,7 +4,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.text.WordUtils;
+import org.apache.commons.lang.WordUtils;
 
 public class ChronoUnitUtils 
 {

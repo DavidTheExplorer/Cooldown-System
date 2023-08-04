@@ -15,7 +15,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.Validate;
+import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 
 import dte.cooldownsystem.cooldown.future.CooldownFuture;
