@@ -219,7 +219,7 @@ public class Cooldown
 	 */
 	public Optional<CooldownFuture> whenOver()
 	{
-		return Optional.of(this.whenOver);
+		return Optional.ofNullable(this.whenOver);
 	}
 
 	/**

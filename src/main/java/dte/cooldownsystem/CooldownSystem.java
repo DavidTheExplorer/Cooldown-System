@@ -2,18 +2,29 @@ package dte.cooldownsystem;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class CooldownSystem extends JavaPlugin
+import dte.cooldownsystem.cooldown.Cooldown;
+import dte.cooldownsystem.tasks.WhenOverHandler;
+
+public class CooldownSystem 
 {
-	private static CooldownSystem INSTANCE;
-	
-	@Override
-	public void onEnable() 
+	private static boolean wasInit;
+
+	public static void init() 
 	{
-		INSTANCE = this;
+		if(wasInit)
+			return;
+
+		//init the task that takes care of cooldowns with an "over" action
+		Cooldown.Builder.addCreationListener(createWhenOverHandler());
+		
+		wasInit = true;
 	}
-	
-	public static CooldownSystem getInstance() 
+
+	private static WhenOverHandler createWhenOverHandler() 
 	{
-		return INSTANCE;
+		WhenOverHandler handler = new WhenOverHandler();
+		handler.runTaskTimer(JavaPlugin.getProvidingPlugin(CooldownSystem.class), 0, 5);
+
+		return handler;
 	}
 }
