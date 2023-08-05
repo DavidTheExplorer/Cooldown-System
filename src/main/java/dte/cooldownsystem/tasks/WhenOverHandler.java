@@ -10,7 +10,7 @@ import java.util.UUID;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import dte.cooldownsystem.cooldown.Cooldown;
-import dte.cooldownsystem.cooldown.listeners.CooldownCreationListener;
+import dte.cooldownsystem.cooldown.CooldownCreationListener;
 import dte.cooldownsystem.cooldownfuture.CooldownFuture;
 import dte.cooldownsystem.utils.CollectionUtils;
 
