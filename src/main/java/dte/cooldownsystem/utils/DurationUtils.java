@@ -1,4 +1,4 @@
-package dte.cooldownsystem.utils.time;
+package dte.cooldownsystem.utils;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.HOURS;
@@ -15,9 +15,6 @@ import java.util.Map;
 
 public class DurationUtils
 {
-	//Container of static methods
-	private DurationUtils(){}
-
 	private static final List<ChronoUnit> DESCRIPTIVE_UNITS = Arrays.asList(DAYS, HOURS, MINUTES, SECONDS);
 
 	public static String describe(Duration duration)

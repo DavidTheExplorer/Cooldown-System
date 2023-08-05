@@ -8,9 +8,6 @@ import java.util.List;
 
 public class CollectionUtils 
 {
-	//Container of static methods
-	private CollectionUtils(){}
-	
 	/**
 	 * Returns all elements from the {@code first collection} that don't exist in the {@code second collection}.
 	 * 

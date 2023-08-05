@@ -1,6 +1,4 @@
-package dte.cooldownsystem.cooldown.listeners;
-
-import dte.cooldownsystem.cooldown.Cooldown;
+package dte.cooldownsystem.cooldown;
 
 @FunctionalInterface
 public interface CooldownCreationListener
