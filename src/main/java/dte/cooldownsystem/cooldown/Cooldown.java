@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
 
-import dte.cooldownsystem.cooldown.future.CooldownFuture;
 import dte.cooldownsystem.cooldown.listeners.CooldownCreationListener;
+import dte.cooldownsystem.cooldownfuture.CooldownFuture;
 
 /**
  * Represents a time that a player has to wait.

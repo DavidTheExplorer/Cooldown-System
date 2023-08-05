@@ -1,4 +1,4 @@
-package dte.cooldownsystem.cooldown.future.factory;
+package dte.cooldownsystem.cooldownfuture;
 
 import java.util.function.BiConsumer;
 
@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import dte.cooldownsystem.cooldown.Cooldown;
-import dte.cooldownsystem.cooldown.future.CooldownFuture;
 import dte.cooldownsystem.utils.DurationUtils;
 
 public class CooldownFutureFactory 
