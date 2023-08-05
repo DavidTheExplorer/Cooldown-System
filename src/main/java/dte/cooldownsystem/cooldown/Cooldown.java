@@ -41,13 +41,24 @@ public class Cooldown
 	 * Puts the provided {@code player} on this cooldown for the provided {@code time}.
 	 * 
 	 * @param player the player to put on cooldown.
-	 * @param duration The duration the player will be on cooldown.
+	 * @param time The time the player will be on cooldown.
 	 */
 	public void put(Player player, Duration time) 
 	{
+		put(player.getUniqueId(), time);
+	}
+	
+	/**
+	 * Puts the provided {@code player}(identified by their UUID) on this cooldown for the provided {@code time}.
+	 * 
+	 * @param playerUUID The UUID of the player to put on cooldown.
+	 * @param time The duration the player will be on cooldown.
+	 */
+	public void put(UUID playerUUID, Duration time) 
+	{
 		Objects.requireNonNull(time, "The cooldown time must be provided!");
 		
-		this.endDates.put(player.getUniqueId(), Instant.now().plus(time));
+		this.endDates.put(playerUUID, Instant.now().plus(time));
 	}
 
 	/**
@@ -60,9 +71,22 @@ public class Cooldown
 	 */
 	public void put(Player player) throws UnsupportedOperationException
 	{
+		put(player.getUniqueId());
+	}
+	
+	/**
+	 * Puts the provided {@code player}(identified by their uuid) on this cooldown for the default time.
+	 * 
+	 * @param playerUUID The UUID of the player to put on cooldown.
+	 * @throws UnsupportedOperationException If a default time wasn't set for this cooldown.
+	 * @see #setDefaultTime(Duration)
+	 * @see Builder#withDefaultTime(Duration)
+	 */
+	public void put(UUID playerUUID) 
+	{
 		Validate.notNull(this.defaultTime, "Cannot put a player on cooldown for the default time, because such one wasn't set.");
 		
-		put(player, this.defaultTime);
+		put(playerUUID, this.defaultTime);
 	}
 	
 	/**
@@ -77,10 +101,10 @@ public class Cooldown
 	}
 
 	/**
-	 * Checks whether the player provided by their {@code UUID} is on this cooldown.
+	 * Checks whether the {@code player}(identified by their uuid) is on this cooldown.
 	 * 
 	 * @param playerUUID The uuid of the player who will be checked.
-	 * @return true if the player was on cooldown, false otherwise.
+	 * @return whether the player was on cooldown.
 	 */
 	public boolean isOnCooldown(UUID playerUUID) 
 	{
@@ -88,11 +112,21 @@ public class Cooldown
 		
 		return Instant.now().isBefore(endDate);
 	}
+	
+	/**
+	 * Deletes the provided {@code player} from this cooldown.
+	 * 
+	 * @param player The player who will be removed from this cooldown.
+	 */
+	public void delete(Player player) 
+	{
+		delete(player.getUniqueId());
+	}
 
 	/**
-	 * Deletes the player provided by their {@code UUID} from this cooldown.
+	 * Deletes the {@code player}(identified by their uuid) from this cooldown.
 	 * 
-	 * @param playerUUID The uuid of the player who will be removed.
+	 * @param playerUUID The uuid of the player who will be removed from this cooldown.
 	 */
 	public void delete(UUID playerUUID)
 	{
@@ -110,10 +144,10 @@ public class Cooldown
 	}
 	
 	/**
-	 * Returns the time left for provided player to be on this cooldown.
+	 * Returns the time left for provided {@code player} to be on this cooldown.
 	 * 
 	 * @param player The player on cooldown.
-	 * @return  The player's time left of cooling down(Empty Optional is returned if the player wasn't on cooldown)
+	 * @return The player's time left of cooling down(Empty Optional is returned if the player wasn't on cooldown)
 	 */
 	public Optional<Duration> getTimeLeft(Player player)
 	{
@@ -121,7 +155,7 @@ public class Cooldown
 	}
 
 	/**
-	 * Returns the time left for provided player to be on this cooldown.
+	 * Returns the time left for the {@code player}(identified by their uuid) to be on this cooldown.
 	 * 
 	 * @param playerUUID The uuid of player on cooldown.
 	 * @return The player's time left of cooling down(Empty Optional is returned if the player wasn't on cooldown)
@@ -152,9 +186,20 @@ public class Cooldown
 	 */
 	public boolean isRejecting(Player player) 
 	{
+		return isRejecting(player.getUniqueId());
+	}
+	
+	/**
+	 * If the {@code player}(identified by their uuid) is on cooldown, the rejection strategy is called and this method returns true.
+	 * Otherwise, nothing happens and false is returned.
+	 * 
+	 * @param playerUUID The uuid of the potentially on cooldown player.
+	 * @return Whether the player was rejected or not.
+	 * @see #getRejectionStrategy()
+	 */
+	public boolean isRejecting(UUID playerUUID) 
+	{
 		Validate.notNull(this.rejectionStrategy, "The rejection strategy must be defined in case the player is on cooldown.");
-
-		UUID playerUUID = player.getUniqueId();
 		
 		if(!isOnCooldown(playerUUID))
 			return false;
@@ -166,7 +211,7 @@ public class Cooldown
 	/**
 	 * Returns what happens when this cooldown is over for someone.
 	 * 
-	 * @return What happens when this cooldown is over for someone, or null if no action was defined.
+	 * @return What happens when this cooldown is over for someone, wrapped in an Optional.
 	 */
 	public Optional<CooldownFuture> whenOver()
 	{
