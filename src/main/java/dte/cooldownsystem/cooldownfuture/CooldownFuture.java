@@ -1,5 +1,6 @@
 package dte.cooldownsystem.cooldownfuture;
 
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 
@@ -48,24 +49,29 @@ public interface CooldownFuture extends BiConsumer<UUID, Cooldown>
 	}
 
 	/**
-	 * Creates a {@code CooldownFuture} that sends a message to the player, with the following Placeholders:
+	 * Creates a {@code CooldownFuture} that sends messages to the player, with the following Placeholders:
 	 * <nl>
 	 * 	<li><i>%time%</i> - the remaining time of the player.
 	 * 	<li><i>%player%</i> - the player's name.
 	 * </nl>
 	 * 
-	 * @param message The message to send to the player.
-	 * @return The created messager future.
+	 * @param messages The messages to send to the player.
+	 * @return The created future.
 	 */
-	public static CooldownFuture message(String message) 
+	public static CooldownFuture message(String... messages) 
 	{
 		return ifOnline((player, playerCooldown) ->
 		{
-			String finalMessage = message
-					.replace("%player%", player.getName())
-					.replace("%time%", playerCooldown.getTimeLeft(player).map(DurationUtils::describe).get());
+			String[] finalMessages = Arrays.stream(messages)
+					.map(message ->
+					{
+						return 	message
+								.replace("%player%", player.getName())
+								.replace("%time%", playerCooldown.getTimeLeft(player).map(DurationUtils::describe).get());
+					})
+					.toArray(String[]::new);
 
-			player.sendMessage(finalMessage);
+			player.sendMessage(finalMessages);
 		});
 	}
 }
