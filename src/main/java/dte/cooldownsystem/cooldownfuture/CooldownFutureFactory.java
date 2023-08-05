@@ -10,16 +10,6 @@ import dte.cooldownsystem.utils.DurationUtils;
 
 public class CooldownFutureFactory 
 {
-	//Placeholders
-	public static final String
-	PLAYER_PLACEHOLDER = "%player%",
-	TIME_PLACEHOLDER = "%time%";
-
-	//Cached Stateless Futures
-	public static final CooldownFuture 
-	DO_NOTHING = (player, playerCooldown) -> {},
-	DEFAULT_MESSAGE = message(String.format("Your cooldown will be over in %s.", TIME_PLACEHOLDER));
-	
 	/**
 	 * Creates a {@code CooldownFuture} that runs the provided {@code player action} on the player passed by their UUID <b>only</b> if the player is online.
 	 * 
@@ -65,8 +55,8 @@ public class CooldownFutureFactory
 				.map(DurationUtils::describe)
 				.get();
 		
-		message = message.replace(PLAYER_PLACEHOLDER, player.getName());
-		message = message.replace(TIME_PLACEHOLDER, elegantTimeLeft);
+		message = message.replace("%player%", player.getName());
+		message = message.replace("%time%", elegantTimeLeft);
 		
 		return message;
 	}
