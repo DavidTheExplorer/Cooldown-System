@@ -36,6 +36,11 @@ public class Cooldown
 		this.defaultTime = builder.defaultTime;
 	}
 
+	public static Cooldown create() 
+	{
+		return new Builder().build();
+	}
+
 	/**
 	 * Puts the provided {@code player} on this cooldown for the provided {@code time}.
 	 * 
