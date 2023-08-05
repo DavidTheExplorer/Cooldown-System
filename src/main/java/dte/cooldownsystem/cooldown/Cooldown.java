@@ -22,7 +22,7 @@ import dte.cooldownsystem.cooldown.future.CooldownFuture;
 import dte.cooldownsystem.cooldown.listeners.CooldownCreationListener;
 
 /**
- * Represents a time that a player has to wait in order to repeat an action.
+ * Represents a time that a player has to wait.
  */
 public class Cooldown
 {
