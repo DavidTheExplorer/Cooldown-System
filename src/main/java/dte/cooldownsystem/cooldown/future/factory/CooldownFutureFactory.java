@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 import dte.cooldownsystem.cooldown.Cooldown;
 import dte.cooldownsystem.cooldown.future.CooldownFuture;
-import dte.cooldownsystem.utils.time.DurationUtils;
+import dte.cooldownsystem.utils.DurationUtils;
 
 public class CooldownFutureFactory 
 {

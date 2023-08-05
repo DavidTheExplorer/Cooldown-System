@@ -1,4 +1,4 @@
-package dte.cooldownsystem.utils.time;
+package dte.cooldownsystem.utils;
 
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
