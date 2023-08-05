@@ -8,9 +8,6 @@ import org.apache.commons.lang.WordUtils;
 
 public class ChronoUnitUtils 
 {
-	//Container of static methods
-	private ChronoUnitUtils(){}
-	
 	private static final Map<ChronoUnit, String> SINGULAR_NAMES = new HashMap<>();
 	
 	public static String getCorrectName(ChronoUnit unit, long unitAmount) 

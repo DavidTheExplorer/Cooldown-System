@@ -11,9 +11,6 @@ import dte.cooldownsystem.utils.DurationUtils;
 
 public class CooldownFutureFactory 
 {
-	//Container of static factory methods
-	private CooldownFutureFactory(){}
-	
 	//Placeholders
 	public static final String
 	PLAYER_PLACEHOLDER = "%player%",

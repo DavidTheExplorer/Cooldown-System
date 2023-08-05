@@ -15,9 +15,6 @@ import java.util.Map;
 
 public class DurationUtils
 {
-	//Container of static methods
-	private DurationUtils(){}
-
 	private static final List<ChronoUnit> DESCRIPTIVE_UNITS = Arrays.asList(DAYS, HOURS, MINUTES, SECONDS);
 
 	public static String describe(Duration duration)
