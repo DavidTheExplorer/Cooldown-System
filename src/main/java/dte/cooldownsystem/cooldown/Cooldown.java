@@ -147,6 +147,14 @@ public class Cooldown
 	}
 
 	/**
+	 * Removes all players from this cooldown.
+	 */
+	public void clear()
+	{
+        this.endDates.clear();
+    }
+
+	/**
 	 * Sets the time to put players on this cooldown when {@link #put(Player)} is called; Also known as the default time.
 	 * 
 	 * @param defaultTime The default time of this cooldown.
