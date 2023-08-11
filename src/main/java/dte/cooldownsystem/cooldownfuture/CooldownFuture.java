@@ -1,14 +1,11 @@
 package dte.cooldownsystem.cooldownfuture;
 
-import java.util.Arrays;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import dte.cooldownsystem.cooldown.Cooldown;
-import dte.cooldownsystem.utils.DurationUtils;
 
 /**
  * Represents an action that will happen in the future, that involves a {@code player}'s cooldown.
@@ -37,15 +34,7 @@ public interface CooldownFuture extends BiConsumer<UUID, Cooldown>
 	 */
 	public static CooldownFuture ifOnline(BiConsumer<Player, Cooldown> playerAction) 
 	{
-		return (playerUUID, playerCooldown) -> 
-		{
-			Player player = Bukkit.getPlayer(playerUUID);
-
-			if(player == null)
-				return;
-
-			playerAction.accept(player, playerCooldown);
-		};
+		return new OnlinePlayerFuture(playerAction);
 	}
 
 	/**
@@ -60,18 +49,6 @@ public interface CooldownFuture extends BiConsumer<UUID, Cooldown>
 	 */
 	public static CooldownFuture message(String... messages) 
 	{
-		return ifOnline((player, playerCooldown) ->
-		{
-			String[] finalMessages = Arrays.stream(messages)
-					.map(message ->
-					{
-						return 	message
-								.replace("%player%", player.getName())
-								.replace("%time%", playerCooldown.getTimeLeft(player).map(DurationUtils::describe).get());
-					})
-					.toArray(String[]::new);
-
-			player.sendMessage(finalMessages);
-		});
+		return new MessageFuture(messages);
 	}
 }
