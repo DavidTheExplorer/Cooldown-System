@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -58,6 +57,8 @@ public class Cooldown
 	 */
 	public void put(Player player, Duration time) 
 	{
+		Validate.notNull(player, "The player to put on cooldown must be provided!");
+		
 		put(player.getUniqueId(), time);
 	}
 	
@@ -69,7 +70,8 @@ public class Cooldown
 	 */
 	public void put(UUID playerUUID, Duration time) 
 	{
-		Objects.requireNonNull(time, "The cooldown time must be provided!");
+		Validate.notNull(playerUUID, "The UUID of the player to put on cooldown must be provided!");
+		Validate.notNull(time, "The time to put the player on cooldown must be provided!");
 		
 		this.endDates.put(playerUUID, Instant.now().plus(time));
 	}
@@ -84,6 +86,8 @@ public class Cooldown
 	 */
 	public void put(Player player) throws UnsupportedOperationException
 	{
+		Validate.notNull(player, "The player to put on cooldown must be provided!");
+		
 		put(player.getUniqueId());
 	}
 	
@@ -97,6 +101,7 @@ public class Cooldown
 	 */
 	public void put(UUID playerUUID) throws UnsupportedOperationException
 	{
+		Validate.notNull(playerUUID, "The UUID of the player to put on cooldown must be provided!");
 		Validate.notNull(this.defaultTime, "Cannot put a player on cooldown for the default time, because such one wasn't set.");
 		
 		put(playerUUID, this.defaultTime);
@@ -110,6 +115,8 @@ public class Cooldown
 	 */
 	public boolean isOnCooldown(Player player)
 	{
+		Validate.notNull(player, "The player to check must be provided!");
+		
 		return isOnCooldown(player.getUniqueId());
 	}
 
@@ -121,6 +128,8 @@ public class Cooldown
 	 */
 	public boolean isOnCooldown(UUID playerUUID) 
 	{
+		Validate.notNull(playerUUID, "The UUID of the player to check must be provided!");
+		
 		Instant endDate = this.endDates.getOrDefault(playerUUID, Instant.MIN);
 		
 		return Instant.now().isBefore(endDate);
@@ -133,6 +142,8 @@ public class Cooldown
 	 */
 	public void delete(Player player) 
 	{
+		Validate.notNull(player, "The player to delete must be provided!");
+		
 		delete(player.getUniqueId());
 	}
 
@@ -143,6 +154,8 @@ public class Cooldown
 	 */
 	public void delete(UUID playerUUID)
 	{
+		Validate.notNull(playerUUID, "The UUID of the player to delete on cooldown must be provided!");
+		
 		this.endDates.remove(playerUUID);
 	}
 
