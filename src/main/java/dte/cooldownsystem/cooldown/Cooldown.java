@@ -20,7 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import dte.cooldownsystem.cooldownfuture.CooldownFuture;
 
 /**
- * Represents a time that a player has to wait.
+ * Represents an arbitrary time period that a player is forced to wait.
  */
 public class Cooldown
 {
@@ -88,14 +88,14 @@ public class Cooldown
 	}
 	
 	/**
-	 * Puts the provided {@code player}(identified by their uuid) on this cooldown for the default time.
+	 * Puts the provided {@code player}(identified by their UUID) on this cooldown for the default time.
 	 * 
 	 * @param playerUUID The UUID of the player to put on cooldown.
 	 * @throws UnsupportedOperationException If a default time wasn't set for this cooldown.
 	 * @see #setDefaultTime(Duration)
 	 * @see Builder#withDefaultTime(Duration)
 	 */
-	public void put(UUID playerUUID) 
+	public void put(UUID playerUUID) throws UnsupportedOperationException
 	{
 		Validate.notNull(this.defaultTime, "Cannot put a player on cooldown for the default time, because such one wasn't set.");
 		
@@ -103,7 +103,7 @@ public class Cooldown
 	}
 	
 	/**
-	 * Returns whether the provided {@code player} is on this cooldown.
+	 * Checks whether the provided {@code player} is on this cooldown.
 	 * 
 	 * @param player The player who will be checked.
 	 * @return whether the player was on cooldown.
@@ -114,7 +114,7 @@ public class Cooldown
 	}
 
 	/**
-	 * Checks whether the {@code player}(identified by their uuid) is on this cooldown.
+	 * Checks whether the provided {@code player}(identified by their UUID) is on this cooldown.
 	 * 
 	 * @param playerUUID The uuid of the player who will be checked.
 	 * @return whether the player was on cooldown.
@@ -137,7 +137,7 @@ public class Cooldown
 	}
 
 	/**
-	 * Deletes the {@code player}(identified by their uuid) from this cooldown.
+	 * Deletes the provided {@code player}(identified by their UUID) from this cooldown.
 	 * 
 	 * @param playerUUID The uuid of the player who will be removed from this cooldown.
 	 */
@@ -176,7 +176,7 @@ public class Cooldown
 	}
 
 	/**
-	 * Returns the time left for the {@code player}(identified by their uuid) to be on this cooldown.
+	 * Returns the time left for the provided {@code player}(identified by their UUID) to be on this cooldown.
 	 * 
 	 * @param playerUUID The uuid of player on cooldown.
 	 * @return The player's time left of cooling down(Empty Optional is returned if the player wasn't on cooldown)
@@ -211,7 +211,7 @@ public class Cooldown
 	}
 	
 	/**
-	 * If the {@code player}(identified by their uuid) is on cooldown, the rejection strategy is called and this method returns true.
+	 * If the provided {@code player}(identified by their UUID) is on cooldown, the rejection strategy is called and this method returns true.
 	 * Otherwise, nothing happens and false is returned.
 	 * 
 	 * @param playerUUID The uuid of the potentially on cooldown player.
@@ -240,7 +240,7 @@ public class Cooldown
 	}
 
 	/**
-	 * Returns what happens when a player who is on cooldown is passed when {@link #wasRejected(Player)} is called.
+	 * Returns what happens when a player who is on cooldown is passed when {@link #isRejecting(Player)} is called.
 	 * 
 	 * @return the rejection strategy of this cooldown, wrapped in an Optional.
 	 */
@@ -318,18 +318,36 @@ public class Cooldown
 		CooldownFuture rejectionStrategy, whenOver;
 		Duration defaultTime;
 		
+		/**
+		 * Sets the time to put players on this cooldown when {@link Cooldown#put(Player)} is called; Also known as the default time.
+		 * 
+		 * @param defaultTime The default time of the cooldown.
+		 * @return This builder object for chaining purposes.
+		 */
 		public Builder withDefaultTime(Duration defaultTime) 
 		{
 			this.defaultTime = defaultTime;
 			return this;
 		}
 		
+		/**
+		 * Sets what happens when {@link Cooldown#isRejecting(Player)} is called for a player who will be the cooldown.
+		 * 
+		 * @param rejectionStrategy The behavior to use.
+		 * @return This builder object for chaining purposes.
+		 */
 		public Builder rejectsWith(CooldownFuture rejectionStrategy) 
 		{
 			this.rejectionStrategy = rejectionStrategy;
 			return this;
 		}
 		
+		/**
+		 * Sets what happens when the cooldown will be over for someone.
+		 * 
+		 * @param whenOver The behavior to use.
+		 * @return This builder object for chaining purposes.
+		 */
 		public Builder whenOver(CooldownFuture whenOver) 
 		{
 			this.whenOver = whenOver;

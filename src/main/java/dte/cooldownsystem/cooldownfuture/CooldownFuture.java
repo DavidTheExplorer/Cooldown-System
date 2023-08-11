@@ -9,8 +9,8 @@ import dte.cooldownsystem.cooldown.Cooldown;
 
 /**
  * Represents an action that will happen in the future, that involves a {@code player}'s cooldown.
- * <p>
- * Usually set while creating a new Cooldown object.
+ * 
+ * @see Cooldown
  */
 @FunctionalInterface
 public interface CooldownFuture extends BiConsumer<UUID, Cooldown>
