@@ -13,7 +13,7 @@ import dte.cooldownsystem.cooldown.Cooldown;
  * @see Cooldown
  */
 @FunctionalInterface
-public interface CooldownFuture extends BiConsumer<UUID, Cooldown>
+public interface CooldownFuture
 {
 	/**
 	 * Executes this action on the provided {@code player} and their {@code cooldown}.
@@ -21,7 +21,6 @@ public interface CooldownFuture extends BiConsumer<UUID, Cooldown>
 	 * @param player The uuid of player on cooldown.
 	 * @param playerCooldown The player's cooldown.
 	 */
-	@Override
 	void accept(UUID playerUUID, Cooldown playerCooldown);
 	
 	
