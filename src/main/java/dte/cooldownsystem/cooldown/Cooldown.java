@@ -25,7 +25,7 @@ import dte.cooldownsystem.cooldownfuture.CooldownFuture;
 public class Cooldown
 {
 	private final Map<UUID, Instant> endDates = new HashMap<>();
-	private final CooldownFuture rejectionStrategy, whenOver;
+	private CooldownFuture rejectionStrategy, whenOver;
 	private Duration defaultTime;
 
 	private static final List<Cooldown> CREATED_COOLDOWNS = new ArrayList<>();
@@ -239,6 +239,26 @@ public class Cooldown
 	public Optional<CooldownFuture> getRejectionStrategy() 
 	{
 		return Optional.ofNullable(this.rejectionStrategy);
+	}
+	
+	/**
+	 * Sets what happens when this cooldown is over for someone.
+	 * 
+	 * @param strategy The behavior to use.
+	 */
+	public void whenOver(CooldownFuture strategy) 
+	{
+		this.whenOver = strategy;
+	}
+	
+	/**
+	 * Sets what happens when {@link #isRejecting(Player)} is called for player who is on this cooldown.
+	 * 
+	 * @param strategy The behavior to use.
+	 */
+	public void rejectWith(CooldownFuture strategy) 
+	{
+		this.rejectionStrategy = strategy;
 	}
 
 	/**
