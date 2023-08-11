@@ -12,11 +12,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import dte.cooldownsystem.cooldownfuture.CooldownFuture;
 
@@ -29,11 +29,21 @@ public class Cooldown
 	private final CooldownFuture rejectionStrategy, whenOver;
 	private Duration defaultTime;
 
+	private static final List<Cooldown> CREATED_COOLDOWNS = new ArrayList<>();
+	
+	static
+	{
+		//refresh all cooldowns every second
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(JavaPlugin.getProvidingPlugin(Cooldown.class), () -> CREATED_COOLDOWNS.forEach(Cooldown::refresh), 0, 20);
+	}
+
 	private Cooldown(Builder builder)
 	{
 		this.rejectionStrategy = builder.rejectionStrategy;
 		this.whenOver = builder.whenOver;
 		this.defaultTime = builder.defaultTime;
+		
+		CREATED_COOLDOWNS.add(this);
 	}
 
 	public static Cooldown create() 
@@ -251,7 +261,28 @@ public class Cooldown
 	 */
 	public Map<UUID, Instant> toMap()
 	{
-		return getPlayersUUIDs().stream().collect(Collectors.toMap(Function.identity(), this.endDates::get));
+		refresh();
+		
+		return new HashMap<>(this.endDates);
+	}
+	
+	/*
+	 * The responsibilities of this method are:
+	 * 1) Remove players who are not on cooldown, to avoid storing irrelevant information.
+	 * 2) If a behavior was defined for when this cooldown is over, run it for who is not on cooldown.
+	 */
+	private void refresh()
+	{
+		this.endDates.keySet().removeIf(playerUUID -> 
+		{
+			if(isOnCooldown(playerUUID)) 
+				return false;
+			
+			if(this.whenOver != null)
+				this.whenOver.accept(playerUUID, this);
+			
+			return true;
+		});
 	}
 
 
@@ -259,13 +290,6 @@ public class Cooldown
 	{
 		CooldownFuture rejectionStrategy, whenOver;
 		Duration defaultTime;
-		
-		private static final List<CooldownCreationListener> CREATION_LISTENERS = new ArrayList<>();
-		
-		public static void addCreationListener(CooldownCreationListener listener) 
-		{
-			CREATION_LISTENERS.add(listener);
-		}
 		
 		public Builder withDefaultTime(Duration defaultTime) 
 		{
@@ -287,10 +311,7 @@ public class Cooldown
 		
 		public Cooldown build()
 		{
-			Cooldown cooldown = new Cooldown(this);
-			CREATION_LISTENERS.forEach(listener -> listener.onCooldownCreated(cooldown));
-			
-			return cooldown;
+			return new Cooldown(this);
 		}
 	}
 }
