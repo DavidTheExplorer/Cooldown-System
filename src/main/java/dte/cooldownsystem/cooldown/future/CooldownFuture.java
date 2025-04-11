@@ -1,4 +1,4 @@
-package dte.cooldownsystem.cooldownfuture;
+package dte.cooldownsystem.cooldown.future;
 
 import java.util.UUID;
 import java.util.function.BiConsumer;

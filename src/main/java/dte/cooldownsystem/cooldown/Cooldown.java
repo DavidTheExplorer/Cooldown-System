@@ -16,7 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import dte.cooldownsystem.cooldownfuture.CooldownFuture;
+import dte.cooldownsystem.cooldown.future.CooldownFuture;
 
 /**
  * Represents an arbitrary time period that a player is forced to wait.
