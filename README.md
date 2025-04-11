@@ -1,74 +1,67 @@
+# Cooldown Logic is Annoying
+Cooldowns are commonly implemented wrong with magic numbers that represent durations and time units(resulting in confusing code), and the greatest pitfall is that they force a lot of boilerplate.\
+This library encapsulates all of that behind a clean and modular interface.
+
 # Demonstration
-Let's mute players for 15 seconds after joining, and then reward them for waiting:
+Let's mute players for 15 seconds upon joining, and then reward them for waiting.
 
-## The Code
+1. Start by creating a simple `Cooldown`:
 ```java
-import static dte.cooldownsystem.cooldownfuture.CooldownFuture.ifOnline;
-import static dte.cooldownsystem.cooldownfuture.CooldownFuture.message;
-.
-.
-private Cooldown chatCooldown;
+Cooldown cooldown = Cooldown.create();
+```
+You can(and should) use the builder:
+```java
+Cooldown chatCooldown = new Cooldown.Builder()
 
-@Override
-public void onEnable() 
-{
-    CooldownSystem.init();
+                //allows calling Cooldown#put without specifying time
+                .withDefaultTime(Duration.ofSeconds(15))
 
-    this.chatCooldown = new Cooldown.Builder()
+                //What happens when this cooldown is over for a player?
+                .whenOver(((playerUUID, playerCooldown) ->
+                {
+                    Player player = Bukkit.getPlayer(playerUUID);
 
-        //define what happens when this cooldown is over for a player
-        .whenOver(ifOnline((player, cooldown) -> 
-        {
-            player.sendMessage("§aSorry for the inconvenience...");
-            player.getInventory().addItem(new ItemStack(Material.DIAMOND_SWORD));
-        }))
+                    //the player may be disconnected after 15 seconds
+                    if(player == null)
+                        return;
 
-        //define what happens when Cooldown#isRejecting runs
-        .rejectsWith(message("§cYou can only talk in %time%.")) 
-        .build();
-
-    Bukkit.getPluginManager().registerEvents(this, this);
-}
+                    player.sendMessage(ChatColor.GREEN + "Sorry for the inconvenience...");
+                    player.getInventory().addItem(new ItemStack(Material.DIAMOND_SWORD));
+                }))
+                .build();
 ```
 
-Events:
-
+2. How to use the cooldown?
 ```java
 @EventHandler
 public void muteOnJoin(PlayerJoinEvent event) 
 {
     Player player = event.getPlayer();
 
-    //Java 8 Time API!
-    this.chatCooldown.put(player, Duration.ofSeconds(15));
+    this.chatCooldown.put(player); //this method has an override that takes a Duration object
     player.sendMessage("§eYou will only be able to speak in 15 seconds.");
 }
 
 @EventHandler
 public void onMutedChat(AsyncPlayerChatEvent event) 
 {
-    //if the player is on the cooldown, the cooldown is rejecting the player + the event is cancelled
+    //this powerful check eliminates what most systems do wrong - if the player is on cooldown, it returns true and runs the rejection strategy on him.
+    //if a factory method was used, you can check Cooldown#isOnCooldown
     if(this.chatCooldown.isRejecting(event.getPlayer()))
         event.setCancelled(true);
 }
 ```
 
-## The Result
+## Result
 ![Alt Text](https://media.giphy.com/media/JJaSWyM08lMA7nDX1f/giphy.gif?cid=790b7611fafe0a51b7cbc8055dd21c9e8f93cbd9ef392691&rid=giphy.gif&ct=g)
 
 ## CooldownFuture
-An action that happens in the future, and works with a **player** and **their cooldown**; Since the player might not be online, it accepts their UUID.\
-Used by many features, for example setting what happens when the cooldown is over.
+An action that happens in the future, handles a **player** and **their cooldown**; Since the player might not be online, it accepts his UUID.\
+Used by many features, for example when setting what happens when the cooldown is over.
 
-### Static methods
-The helper methods in CooldownFuture come in handy a lot, and they make the library be read like English.
+Pro Tip: The factory methods in CooldownFuture come a lot in handy, use them with static import.
 
 ## Placeholders
 Some places in the library support placeholders, which are:
 - *%player%* - The player on cooldown's name.
-- *%time%* - The remaining time for someone within their cooldown, expressed elegantly.
-
-## FAQ
-- How to create a CooldownFuture that runs only if the player is online? **CooldownFuture#ifOnline**.
-- Calling the static methods of Cooldown is ugly... Use **static import**!
-- How to create a Cooldown without all the fancy stuff - Only to put/check whether a player is in there? Use **Cooldown#create**
+- *%time%* - The remaining time for someone within their cooldown.
