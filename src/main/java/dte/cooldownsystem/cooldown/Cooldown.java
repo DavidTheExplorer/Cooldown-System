@@ -17,7 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import dte.cooldownsystem.cooldown.future.CooldownFuture;
 
 /**
- * Represents an arbitrary time period that a player is forced to wait.
+ * Represents a period that a player is forced to wait.
  */
 public class Cooldown
 {
@@ -48,10 +48,7 @@ public class Cooldown
 	}
 
 	/**
-	 * Puts the provided {@code player} on this cooldown for the provided {@code time}.
-	 * 
-	 * @param player the player to put on cooldown.
-	 * @param time The time the player will be on cooldown.
+	 * Convenient version of {@link Cooldown#put(UUID, Duration)} that directly accepts the {@code Player}.
 	 */
 	public void put(Player player, Duration time) 
 	{
@@ -63,8 +60,8 @@ public class Cooldown
 	/**
 	 * Puts the provided {@code player}(identified by their UUID) on this cooldown for the provided {@code time}.
 	 * 
-	 * @param playerUUID The UUID of the player to put on cooldown.
-	 * @param time The duration the player will be on cooldown.
+	 * @param playerUUID The UUID of the player.
+	 * @param time The time.
 	 */
 	public void put(UUID playerUUID, Duration time) 
 	{
@@ -75,14 +72,9 @@ public class Cooldown
 	}
 
 	/**
-	 * Puts the provided {@code player} on this cooldown for the default time.
-	 * 
-	 * @param player The player to put on cooldown.
-	 * @throws UnsupportedOperationException If a default time wasn't set for this cooldown.
-	 * @see #setDefaultTime(Duration)
-	 * @see Builder#withDefaultTime(Duration)
+	 * Convenient version of {@link Cooldown#put(UUID)} that directly accepts the {@code Player}.
 	 */
-	public void put(Player player) throws UnsupportedOperationException
+	public void put(Player player)
 	{
 		Validate.notNull(player, "The player to put on cooldown must be provided!");
 		
@@ -91,25 +83,22 @@ public class Cooldown
 	
 	/**
 	 * Puts the provided {@code player}(identified by their UUID) on this cooldown for the default time.
-	 * 
-	 * @param playerUUID The UUID of the player to put on cooldown.
-	 * @throws UnsupportedOperationException If a default time wasn't set for this cooldown.
+	 * If no such time was defined, an exception will be thrown.
+	 *
+	 * @param playerUUID The UUID of the player.
 	 * @see #setDefaultTime(Duration)
 	 * @see Builder#withDefaultTime(Duration)
 	 */
-	public void put(UUID playerUUID) throws UnsupportedOperationException
+	public void put(UUID playerUUID)
 	{
 		Validate.notNull(playerUUID, "The UUID of the player to put on cooldown must be provided!");
 		Validate.notNull(this.defaultTime, "Cannot put a player on cooldown for the default time, because such one wasn't set.");
 		
 		put(playerUUID, this.defaultTime);
 	}
-	
+
 	/**
-	 * Checks whether the provided {@code player} is on this cooldown.
-	 * 
-	 * @param player The player who will be checked.
-	 * @return whether the player was on cooldown.
+	 * Convenient version of {@link Cooldown#isOnCooldown(UUID)} that directly accepts the {@code Player}.
 	 */
 	public boolean isOnCooldown(Player player)
 	{
@@ -121,8 +110,8 @@ public class Cooldown
 	/**
 	 * Checks whether the provided {@code player}(identified by their UUID) is on this cooldown.
 	 * 
-	 * @param playerUUID The uuid of the player who will be checked.
-	 * @return whether the player was on cooldown.
+	 * @param playerUUID The UUID of the player.
+	 * @return Whether the player is on cooldown.
 	 */
 	public boolean isOnCooldown(UUID playerUUID) 
 	{
@@ -134,9 +123,7 @@ public class Cooldown
 	}
 	
 	/**
-	 * Deletes the provided {@code player} from this cooldown.
-	 * 
-	 * @param player The player who will be removed from this cooldown.
+	 * Convenient version of {@link Cooldown#delete(UUID)} that directly accepts the {@code Player}.
 	 */
 	public void delete(Player player) 
 	{
@@ -148,7 +135,7 @@ public class Cooldown
 	/**
 	 * Deletes the provided {@code player}(identified by their UUID) from this cooldown.
 	 * 
-	 * @param playerUUID The uuid of the player who will be removed from this cooldown.
+	 * @param playerUUID The UUID of the player.
 	 */
 	public void delete(UUID playerUUID)
 	{
@@ -166,20 +153,17 @@ public class Cooldown
     }
 
 	/**
-	 * Sets the time to put players on this cooldown when {@link #put(Player)} is called; Also known as the default time.
+	 * Sets the default time to put players on this cooldown.
 	 * 
-	 * @param defaultTime The default time of this cooldown.
+	 * @param defaultTime The new default time.
 	 */
 	public void setDefaultTime(Duration defaultTime) 
 	{
 		this.defaultTime = defaultTime;
 	}
-	
+
 	/**
-	 * Returns the time left for provided {@code player} to be on this cooldown.
-	 * 
-	 * @param player The player on cooldown.
-	 * @return The player's time left of cooling down(Empty Optional is returned if the player wasn't on cooldown)
+	 * Convenient version of {@link Cooldown#getTimeLeft(UUID)} that directly accepts the {@code Player}
 	 */
 	public Optional<Duration> getTimeLeft(Player player)
 	{
@@ -188,9 +172,10 @@ public class Cooldown
 
 	/**
 	 * Returns the time left for the provided {@code player}(identified by their UUID) to be on this cooldown.
-	 * 
-	 * @param playerUUID The uuid of player on cooldown.
-	 * @return The player's time left of cooling down(Empty Optional is returned if the player wasn't on cooldown)
+	 * If the player is not on this cooldown, an empty Optional is returned.
+	 *
+	 * @param playerUUID The UUID of player.
+	 * @return The player's time left.
 	 */
 	public Optional<Duration> getTimeLeft(UUID playerUUID)
 	{
@@ -199,22 +184,17 @@ public class Cooldown
 	}
 	
 	/**
-	 * Returns this cooldown's <i>default time</i> which is used when {@link #put(Player)} is called.
+	 * Returns the default amount of time for players to be on this cooldown.
 	 * 
-	 * @return The default time of this cooldown.
+	 * @return The default time.
 	 */
 	public Optional<Duration> getDefaultTime()
 	{
 		return Optional.ofNullable(this.defaultTime);
 	}
-	
+
 	/**
-	 * If the provided {@code player} is on cooldown, the rejection strategy is called and this method returns true.
-	 * Otherwise, nothing happens and false is returned.
-	 * 
-	 * @param player The potentially on cooldown player.
-	 * @return Whether the player was rejected or not.
-	 * @see #getRejectionStrategy()
+	 * Convenient version of {@link Cooldown#isRejecting(UUID)} that directly accepts the {@code Player}.
 	 */
 	public boolean isRejecting(Player player) 
 	{
@@ -222,7 +202,7 @@ public class Cooldown
 	}
 	
 	/**
-	 * If the provided {@code player}(identified by their UUID) is on cooldown, the rejection strategy is called and this method returns true.
+	 * If the provided {@code player}(identified by their UUID) is on this cooldown, the rejection strategy is called and true is returned.
 	 * Otherwise, nothing happens and false is returned.
 	 * 
 	 * @param playerUUID The uuid of the potentially on cooldown player.
@@ -243,7 +223,7 @@ public class Cooldown
 	/**
 	 * Returns what happens when this cooldown is over for someone.
 	 * 
-	 * @return What happens when this cooldown is over for someone, wrapped in an Optional.
+	 * @return What happens as an object.
 	 */
 	public Optional<CooldownFuture> whenOver()
 	{
@@ -251,9 +231,9 @@ public class Cooldown
 	}
 
 	/**
-	 * Returns what happens when a player who is on cooldown is passed when {@link #isRejecting(Player)} is called.
+	 * Returns what happens when this cooldown rejects someone.
 	 * 
-	 * @return the rejection strategy of this cooldown, wrapped in an Optional.
+	 * @return What happens as an object.
 	 */
 	public Optional<CooldownFuture> getRejectionStrategy() 
 	{
@@ -271,7 +251,7 @@ public class Cooldown
 	}
 	
 	/**
-	 * Sets what happens when {@link #isRejecting(Player)} is called for player who is on this cooldown.
+	 * Sets what happens when this cooldown rejects someone.
 	 * 
 	 * @param strategy The behavior to use.
 	 */
@@ -292,11 +272,7 @@ public class Cooldown
 		return new HashMap<>(this.endDates);
 	}
 	
-	/*
-	 * The responsibilities of this method are:
-	 * 1) Remove players who are not on cooldown, to avoid storing irrelevant information.
-	 * 2) If a behavior was defined for when this cooldown is over, run it for who is not on cooldown.
-	 */
+	//removes players that aren't on this cooldown, triggering the 'whenOver' strategy if it was defined
 	private void refresh()
 	{
 		this.endDates.keySet().removeIf(playerUUID -> 
@@ -318,9 +294,9 @@ public class Cooldown
 		Duration defaultTime;
 		
 		/**
-		 * Sets the time to put players on this cooldown when {@link Cooldown#put(Player)} is called; Also known as the default time.
+		 * Sets the default time to put players on the cooldown.
 		 * 
-		 * @param defaultTime The default time of the cooldown.
+		 * @param defaultTime The default time.
 		 * @return This builder object for chaining purposes.
 		 */
 		public Builder withDefaultTime(Duration defaultTime) 
@@ -330,8 +306,8 @@ public class Cooldown
 		}
 		
 		/**
-		 * Sets what happens when {@link Cooldown#isRejecting(Player)} is called for a player who will be the cooldown.
-		 * 
+		 * Sets the way the cooldown will reject a player.
+		 *
 		 * @param rejectionStrategy The behavior to use.
 		 * @return This builder object for chaining purposes.
 		 */
@@ -342,7 +318,7 @@ public class Cooldown
 		}
 		
 		/**
-		 * Sets what happens when the cooldown will be over for someone.
+		 * Sets what happens when the cooldown is over for someone.
 		 * 
 		 * @param whenOver The behavior to use.
 		 * @return This builder object for chaining purposes.

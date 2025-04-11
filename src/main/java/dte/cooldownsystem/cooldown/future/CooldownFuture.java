@@ -8,17 +8,15 @@ import org.bukkit.entity.Player;
 import dte.cooldownsystem.cooldown.Cooldown;
 
 /**
- * Represents an action that will happen in the future, that involves a {@code player}'s cooldown.
- * 
- * @see Cooldown
+ * Represents a future action that handles a player and their cooldown.
  */
 @FunctionalInterface
 public interface CooldownFuture
 {
 	/**
-	 * Executes this action on the provided {@code player} and their {@code cooldown}.
+	 * Executes on the provided {@code player}(identified by their UUID) and their {@code cooldown}.
 	 * 
-	 * @param player The uuid of player on cooldown.
+	 * @param playerUUID The uuid of player.
 	 * @param playerCooldown The player's cooldown.
 	 */
 	void accept(UUID playerUUID, Cooldown playerCooldown);
@@ -26,18 +24,18 @@ public interface CooldownFuture
 	
 
 	/**
-	 * Creates a {@code CooldownFuture} based on the provided {@code action}, but it runs <b>only</b> if the player is online.
+	 * Creates a future based on the provided {@code action} that runs only if the player is online.
 	 * 
-	 * @param playerAction The action to run on the online player.
+	 * @param playerAction The delegate action.
 	 * @return The created future.
 	 */
-	public static CooldownFuture ifOnline(BiConsumer<Player, Cooldown> playerAction) 
+	static CooldownFuture ifOnline(BiConsumer<Player, Cooldown> playerAction)
 	{
 		return new OnlinePlayerFuture(playerAction);
 	}
 
 	/**
-	 * Creates a {@code CooldownFuture} that sends messages to the player, with the following Placeholders:
+	 * Creates a future that messages the player, with the following placeholders:
 	 * <nl>
 	 * 	<li><i>%time%</i> - the remaining time of the player.
 	 * 	<li><i>%player%</i> - the player's name.
@@ -46,7 +44,7 @@ public interface CooldownFuture
 	 * @param messages The messages to send to the player.
 	 * @return The created future.
 	 */
-	public static CooldownFuture message(String... messages) 
+	static CooldownFuture message(String... messages)
 	{
 		return new MessageFuture(messages);
 	}
