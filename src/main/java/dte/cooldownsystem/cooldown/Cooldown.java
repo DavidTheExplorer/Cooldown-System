@@ -123,23 +123,23 @@ public class Cooldown
 	}
 	
 	/**
-	 * Convenient version of {@link Cooldown#delete(UUID)} that directly accepts the {@code Player}.
+	 * Convenient version of {@link Cooldown#release(UUID)} that directly accepts the {@code Player}.
 	 */
-	public void delete(Player player) 
+	public void release(Player player)
 	{
-		Validate.notNull(player, "The player to delete must be provided!");
+		Validate.notNull(player, "The player to release must be provided!");
 		
-		delete(player.getUniqueId());
+		release(player.getUniqueId());
 	}
 
 	/**
-	 * Deletes the provided {@code player}(identified by their UUID) from this cooldown.
+	 * Releases the provided {@code player}(identified by their UUID) from this cooldown.
 	 * 
 	 * @param playerUUID The UUID of the player.
 	 */
-	public void delete(UUID playerUUID)
+	public void release(UUID playerUUID)
 	{
-		Validate.notNull(playerUUID, "The UUID of the player to delete on cooldown must be provided!");
+		Validate.notNull(playerUUID, "The UUID of the player to release on cooldown must be provided!");
 		
 		this.endDates.remove(playerUUID);
 	}
