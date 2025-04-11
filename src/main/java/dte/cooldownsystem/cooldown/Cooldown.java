@@ -98,13 +98,13 @@ public class Cooldown
 	}
 
 	/**
-	 * Convenient version of {@link Cooldown#isOnCooldown(UUID)} that directly accepts the {@code Player}.
+	 * Convenient version of {@link Cooldown#isOn(UUID)} that directly accepts the {@code Player}.
 	 */
-	public boolean isOnCooldown(Player player)
+	public boolean isOn(Player player)
 	{
 		Validate.notNull(player, "The player to check must be provided!");
 		
-		return isOnCooldown(player.getUniqueId());
+		return isOn(player.getUniqueId());
 	}
 
 	/**
@@ -113,7 +113,7 @@ public class Cooldown
 	 * @param playerUUID The UUID of the player.
 	 * @return Whether the player is on cooldown.
 	 */
-	public boolean isOnCooldown(UUID playerUUID) 
+	public boolean isOn(UUID playerUUID)
 	{
 		Validate.notNull(playerUUID, "The UUID of the player to check must be provided!");
 		
@@ -213,7 +213,7 @@ public class Cooldown
 	{
 		Validate.notNull(this.rejectionStrategy, "The rejection strategy must be defined in case the player is on cooldown.");
 		
-		if(!isOnCooldown(playerUUID))
+		if(!isOn(playerUUID))
 			return false;
 		
 		this.rejectionStrategy.accept(playerUUID, this);
@@ -277,7 +277,7 @@ public class Cooldown
 	{
 		this.endDates.keySet().removeIf(playerUUID -> 
 		{
-			if(isOnCooldown(playerUUID)) 
+			if(isOn(playerUUID))
 				return false;
 			
 			if(this.whenOver != null)
