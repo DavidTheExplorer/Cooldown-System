@@ -4,11 +4,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.Validate;
@@ -280,18 +278,6 @@ public class Cooldown
 	public void rejectWith(CooldownFuture strategy) 
 	{
 		this.rejectionStrategy = strategy;
-	}
-
-	/**
-	 * Returns a snapshot of the players on this cooldown.
-	 * 
-	 * @return The UUIDs of the players on this cooldown.
-	 */
-	public Set<UUID> getPlayersUUIDs()
-	{
-		refresh();
-		
-		return new HashSet<>(this.endDates.keySet());
 	}
 
 	/**
