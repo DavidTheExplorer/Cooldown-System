@@ -2,9 +2,7 @@ package dte.cooldownsystem.cooldown;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -22,24 +20,13 @@ import dte.cooldownsystem.cooldown.future.CooldownFuture;
 public class Cooldown
 {
 	private final Map<UUID, Instant> endDates = new HashMap<>();
-	private CooldownFuture rejectionStrategy, whenOver;
+	private CooldownFuture rejectionStrategy;
 	private Duration defaultTime;
-
-	private static final List<Cooldown> CREATED_COOLDOWNS = new ArrayList<>();
-	
-	static
-	{
-		//refresh all cooldowns every second
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(JavaPlugin.getProvidingPlugin(Cooldown.class), () -> CREATED_COOLDOWNS.forEach(Cooldown::refresh), 0, 20);
-	}
 
 	private Cooldown(Builder builder)
 	{
 		this.rejectionStrategy = builder.rejectionStrategy;
-		this.whenOver = builder.whenOver;
 		this.defaultTime = builder.defaultTime;
-		
-		CREATED_COOLDOWNS.add(this);
 	}
 
 	public static Cooldown create() 
@@ -223,26 +210,6 @@ public class Cooldown
 	}
 
 	/**
-	 * Returns what happens when this cooldown is over for someone.
-	 * 
-	 * @return What happens as an object.
-	 */
-	public Optional<CooldownFuture> setWhenOver()
-	{
-		return Optional.ofNullable(this.whenOver);
-	}
-
-	/**
-	 * Sets what happens when this cooldown is over for someone.
-	 *
-	 * @param strategy The behavior to use.
-	 */
-	public void setWhenOver(CooldownFuture strategy)
-	{
-		this.whenOver = strategy;
-	}
-
-	/**
 	 * Returns what happens when this cooldown rejects someone.
 	 * 
 	 * @return What happens as an object.
@@ -269,30 +236,16 @@ public class Cooldown
 	 */
 	public Map<UUID, Instant> toMap()
 	{
-		refresh();
-		
+		this.endDates.keySet().removeIf(this::isOn);
+
 		return new HashMap<>(this.endDates);
 	}
-	
-	//removes players that aren't on this cooldown, triggering the 'whenOver' strategy if it was defined
-	private void refresh()
-	{
-		this.endDates.keySet().removeIf(playerUUID -> 
-		{
-			if(isOn(playerUUID))
-				return false;
-			
-			if(this.whenOver != null)
-				this.whenOver.accept(playerUUID, this);
-			
-			return true;
-		});
-	}
+
 
 
 	public static class Builder
 	{
-		CooldownFuture rejectionStrategy, whenOver;
+		CooldownFuture rejectionStrategy;
 		Duration defaultTime;
 		
 		/**
@@ -316,18 +269,6 @@ public class Cooldown
 		public Builder rejectsWith(CooldownFuture rejectionStrategy) 
 		{
 			this.rejectionStrategy = rejectionStrategy;
-			return this;
-		}
-		
-		/**
-		 * Sets what happens when the cooldown is over for someone.
-		 * 
-		 * @param whenOver The behavior to use.
-		 * @return This builder object for chaining purposes.
-		 */
-		public Builder whenOver(CooldownFuture whenOver) 
-		{
-			this.whenOver = whenOver;
 			return this;
 		}
 		
