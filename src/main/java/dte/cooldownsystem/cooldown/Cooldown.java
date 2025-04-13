@@ -227,7 +227,7 @@ public class Cooldown
 	 * 
 	 * @return What happens as an object.
 	 */
-	public Optional<CooldownFuture> whenOver()
+	public Optional<CooldownFuture> setWhenOver()
 	{
 		return Optional.ofNullable(this.whenOver);
 	}
@@ -237,7 +237,7 @@ public class Cooldown
 	 *
 	 * @param strategy The behavior to use.
 	 */
-	public void whenOver(CooldownFuture strategy)
+	public void setWhenOver(CooldownFuture strategy)
 	{
 		this.whenOver = strategy;
 	}
@@ -257,7 +257,7 @@ public class Cooldown
 	 * 
 	 * @param strategy The behavior to use.
 	 */
-	public void rejectWith(CooldownFuture strategy) 
+	public void setRejectionStrategy(CooldownFuture strategy)
 	{
 		this.rejectionStrategy = strategy;
 	}
