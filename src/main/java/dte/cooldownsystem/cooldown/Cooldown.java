@@ -48,7 +48,7 @@ public class Cooldown
 	}
 
 	/**
-	 * Convenient version of {@link Cooldown#put(UUID, Duration)} that directly accepts the {@code Player}.
+	 * Convenient version of {@link #put(UUID, Duration)} that directly accepts the {@code Player}.
 	 */
 	public void put(Player player, Duration time) 
 	{
@@ -72,7 +72,7 @@ public class Cooldown
 	}
 
 	/**
-	 * Convenient version of {@link Cooldown#put(UUID)} that directly accepts the {@code Player}.
+	 * Convenient version of {@link #put(UUID)} that directly accepts the {@code Player}.
 	 */
 	public void put(Player player)
 	{
@@ -98,7 +98,7 @@ public class Cooldown
 	}
 
 	/**
-	 * Convenient version of {@link Cooldown#isOn(UUID)} that directly accepts the {@code Player}.
+	 * Convenient version of {@link #isOn(UUID)} that directly accepts the {@code Player}.
 	 */
 	public boolean isOn(Player player)
 	{
@@ -123,7 +123,7 @@ public class Cooldown
 	}
 	
 	/**
-	 * Convenient version of {@link Cooldown#release(UUID)} that directly accepts the {@code Player}.
+	 * Convenient version of {@link #release(UUID)} that directly accepts the {@code Player}.
 	 */
 	public void release(Player player)
 	{
@@ -163,7 +163,7 @@ public class Cooldown
 	}
 
 	/**
-	 * Convenient version of {@link Cooldown#getTimeLeft(UUID)} that directly accepts the {@code Player}
+	 * Convenient version of {@link #getTimeLeft(UUID)} that directly accepts the {@code Player}
 	 */
 	public Optional<Duration> getTimeLeft(Player player)
 	{
@@ -194,7 +194,7 @@ public class Cooldown
 	}
 
 	/**
-	 * Convenient version of {@link Cooldown#test(UUID)} that directly accepts the {@code Player}.
+	 * Convenient version of {@link #test(UUID)} that directly accepts the {@code Player}.
 	 */
 	public boolean test(Player player)
 	{
