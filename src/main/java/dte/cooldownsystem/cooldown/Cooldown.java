@@ -188,10 +188,10 @@ public class Cooldown
 		Validate.notNull(this.rejectionStrategy, "The rejection strategy must be defined in case the player is on cooldown.");
 
 		if(!isOn(playerUUID))
-			return false;
+			return true;
 
 		this.rejectionStrategy.accept(playerUUID, this);
-		return true;
+		return false;
 	}
 
 	/**
