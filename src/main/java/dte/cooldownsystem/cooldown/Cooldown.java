@@ -194,22 +194,24 @@ public class Cooldown
 	}
 
 	/**
-	 * Convenient version of {@link Cooldown#isRejecting(UUID)} that directly accepts the {@code Player}.
+	 * Convenient version of {@link Cooldown#test(UUID)} that directly accepts the {@code Player}.
 	 */
-	public boolean isRejecting(Player player) 
+	public boolean test(Player player)
 	{
-		return isRejecting(player.getUniqueId());
+		return test(player.getUniqueId());
 	}
 	
 	/**
 	 * If the provided {@code player}(identified by their UUID) is on this cooldown, the rejection strategy is called and true is returned.
 	 * Otherwise, nothing happens and false is returned.
+	 * <p>
+	 * This method differs from {@link #isOn(UUID)} by running the rejection strategy if the player is on cooldown - reducing boilerplate.
 	 * 
 	 * @param playerUUID The uuid of the potentially on cooldown player.
 	 * @return Whether the player was rejected or not.
 	 * @see #getRejectionStrategy()
 	 */
-	public boolean isRejecting(UUID playerUUID) 
+	public boolean test(UUID playerUUID)
 	{
 		Validate.notNull(this.rejectionStrategy, "The rejection strategy must be defined in case the player is on cooldown.");
 		
