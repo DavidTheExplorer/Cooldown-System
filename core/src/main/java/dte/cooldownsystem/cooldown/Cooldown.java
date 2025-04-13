@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -52,8 +52,8 @@ public class Cooldown
 	 */
 	public void put(Player player, Duration time) 
 	{
-		Validate.notNull(player, "The player to put on cooldown must be provided!");
-		
+		Objects.requireNonNull(player, "The player to put on cooldown must be provided!");
+
 		put(player.getUniqueId(), time);
 	}
 	
@@ -65,8 +65,8 @@ public class Cooldown
 	 */
 	public void put(UUID playerUUID, Duration time) 
 	{
-		Validate.notNull(playerUUID, "The UUID of the player to put on cooldown must be provided!");
-		Validate.notNull(time, "The time to put the player on cooldown must be provided!");
+		Objects.requireNonNull(playerUUID, "The UUID of the player to put on cooldown must be provided!");
+		Objects.requireNonNull(time, "The time to put the player on cooldown must be provided!");
 		
 		this.endDates.put(playerUUID, Instant.now().plus(time));
 	}
@@ -76,7 +76,7 @@ public class Cooldown
 	 */
 	public void put(Player player)
 	{
-		Validate.notNull(player, "The player to put on cooldown must be provided!");
+		Objects.requireNonNull(player, "The player to put on cooldown must be provided!");
 		
 		put(player.getUniqueId());
 	}
@@ -91,8 +91,8 @@ public class Cooldown
 	 */
 	public void put(UUID playerUUID)
 	{
-		Validate.notNull(playerUUID, "The UUID of the player to put on cooldown must be provided!");
-		Validate.notNull(this.defaultTime, "Cannot put a player on cooldown for the default time, because such one wasn't set.");
+		Objects.requireNonNull(playerUUID, "The UUID of the player to put on cooldown must be provided!");
+		Objects.requireNonNull(this.defaultTime, "Cannot put a player on cooldown for the default time, because such one wasn't set.");
 		
 		put(playerUUID, this.defaultTime);
 	}
@@ -102,7 +102,7 @@ public class Cooldown
 	 */
 	public boolean isOn(Player player)
 	{
-		Validate.notNull(player, "The player to check must be provided!");
+		Objects.requireNonNull(player, "The player to check must be provided!");
 		
 		return isOn(player.getUniqueId());
 	}
@@ -115,7 +115,7 @@ public class Cooldown
 	 */
 	public boolean isOn(UUID playerUUID)
 	{
-		Validate.notNull(playerUUID, "The UUID of the player to check must be provided!");
+		Objects.requireNonNull(playerUUID, "The UUID of the player to check must be provided!");
 		
 		Instant endDate = this.endDates.getOrDefault(playerUUID, Instant.MIN);
 		
@@ -127,7 +127,7 @@ public class Cooldown
 	 */
 	public void release(Player player)
 	{
-		Validate.notNull(player, "The player to release must be provided!");
+		Objects.requireNonNull(player, "The player to release must be provided!");
 		
 		release(player.getUniqueId());
 	}
@@ -139,7 +139,7 @@ public class Cooldown
 	 */
 	public void release(UUID playerUUID)
 	{
-		Validate.notNull(playerUUID, "The UUID of the player to release on cooldown must be provided!");
+		Objects.requireNonNull(playerUUID, "The UUID of the player to release on cooldown must be provided!");
 		
 		this.endDates.remove(playerUUID);
 	}
@@ -185,7 +185,7 @@ public class Cooldown
 	 */
 	public boolean test(UUID playerUUID)
 	{
-		Validate.notNull(this.rejectionStrategy, "The rejection strategy must be defined in case the player is on cooldown.");
+		Objects.requireNonNull(this.rejectionStrategy, "The rejection strategy must be defined in case the player is on cooldown.");
 
 		if(!isOn(playerUUID))
 			return true;
