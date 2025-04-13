@@ -145,24 +145,6 @@ public class Cooldown
 	}
 
 	/**
-	 * Removes all players from this cooldown.
-	 */
-	public void clear()
-	{
-        this.endDates.clear();
-    }
-
-	/**
-	 * Sets the default time to put players on this cooldown.
-	 * 
-	 * @param defaultTime The new default time.
-	 */
-	public void setDefaultTime(Duration defaultTime) 
-	{
-		this.defaultTime = defaultTime;
-	}
-
-	/**
 	 * Convenient version of {@link #getTimeLeft(UUID)} that directly accepts the {@code Player}
 	 */
 	public Optional<Duration> getTimeLeft(Player player)
@@ -182,16 +164,6 @@ public class Cooldown
 		return Optional.ofNullable(this.endDates.get(playerUUID))
 				.map(endDate -> Duration.between(Instant.now(), endDate));
 	}
-	
-	/**
-	 * Returns the default amount of time for players to be on this cooldown.
-	 * 
-	 * @return The default time.
-	 */
-	public Optional<Duration> getDefaultTime()
-	{
-		return Optional.ofNullable(this.defaultTime);
-	}
 
 	/**
 	 * Convenient version of {@link #test(UUID)} that directly accepts the {@code Player}.
@@ -200,13 +172,13 @@ public class Cooldown
 	{
 		return test(player.getUniqueId());
 	}
-	
+
 	/**
 	 * If the provided {@code player}(identified by their UUID) is on this cooldown, the rejection strategy is called and true is returned.
 	 * Otherwise, nothing happens and false is returned.
 	 * <p>
 	 * This method differs from {@link #isOn(UUID)} by running the rejection strategy if the player is on cooldown - reducing boilerplate.
-	 * 
+	 *
 	 * @param playerUUID The uuid of the potentially on cooldown player.
 	 * @return Whether the player was rejected or not.
 	 * @see #getRejectionStrategy()
@@ -214,12 +186,40 @@ public class Cooldown
 	public boolean test(UUID playerUUID)
 	{
 		Validate.notNull(this.rejectionStrategy, "The rejection strategy must be defined in case the player is on cooldown.");
-		
+
 		if(!isOn(playerUUID))
 			return false;
-		
+
 		this.rejectionStrategy.accept(playerUUID, this);
 		return true;
+	}
+
+	/**
+	 * Removes all players from this cooldown.
+	 */
+	public void clear()
+	{
+        this.endDates.clear();
+    }
+
+	/**
+	 * Returns the default amount of time for players to be on this cooldown.
+	 *
+	 * @return The default time.
+	 */
+	public Optional<Duration> getDefaultTime()
+	{
+		return Optional.ofNullable(this.defaultTime);
+	}
+
+	/**
+	 * Sets the default time to put players on this cooldown.
+	 * 
+	 * @param defaultTime The new default time.
+	 */
+	public void setDefaultTime(Duration defaultTime) 
+	{
+		this.defaultTime = defaultTime;
 	}
 
 	/**
@@ -233,6 +233,16 @@ public class Cooldown
 	}
 
 	/**
+	 * Sets what happens when this cooldown is over for someone.
+	 *
+	 * @param strategy The behavior to use.
+	 */
+	public void whenOver(CooldownFuture strategy)
+	{
+		this.whenOver = strategy;
+	}
+
+	/**
 	 * Returns what happens when this cooldown rejects someone.
 	 * 
 	 * @return What happens as an object.
@@ -240,16 +250,6 @@ public class Cooldown
 	public Optional<CooldownFuture> getRejectionStrategy() 
 	{
 		return Optional.ofNullable(this.rejectionStrategy);
-	}
-	
-	/**
-	 * Sets what happens when this cooldown is over for someone.
-	 * 
-	 * @param strategy The behavior to use.
-	 */
-	public void whenOver(CooldownFuture strategy) 
-	{
-		this.whenOver = strategy;
 	}
 	
 	/**
