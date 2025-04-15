@@ -1,11 +1,11 @@
-package dte.cooldownsystem.cooldown.future;
+package dte.cooldownsystem.bukkit.futures;
 
 import java.util.Arrays;
 
 import org.bukkit.entity.Player;
 
-import dte.cooldownsystem.cooldown.Cooldown;
-import dte.cooldownsystem.utils.DurationUtils;
+import dte.cooldownsystem.Cooldown;
+import dte.cooldownsystem.bukkit.utils.DurationUtils;
 
 public class MessageFuture extends OnlinePlayerFuture
 {
@@ -21,14 +21,14 @@ public class MessageFuture extends OnlinePlayerFuture
 		});
 	}
 
-	private static String injectPlaceholders(String message, Player player, Cooldown playerCooldown) 
+	private static String injectPlaceholders(String message, Player player, Cooldown<Player> playerCooldown)
 	{
 		return message
 				.replace("%player%", player.getName())
 				.replace("%time%", describeTimeLeft(player, playerCooldown));
 	}
 
-	private static String describeTimeLeft(Player player, Cooldown playerCooldown) 
+	private static String describeTimeLeft(Player player, Cooldown<Player> playerCooldown)
 	{
 		return playerCooldown.getTimeLeft(player)
 				.map(DurationUtils::describe)

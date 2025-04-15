@@ -1,4 +1,4 @@
-package dte.cooldownsystem.utils;
+package dte.cooldownsystem.bukkit.utils;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.HOURS;

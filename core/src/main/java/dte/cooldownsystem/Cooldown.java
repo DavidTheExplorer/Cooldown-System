@@ -1,4 +1,4 @@
-package dte.cooldownsystem.cooldown;
+package dte.cooldownsystem;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -8,40 +8,33 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import dte.cooldownsystem.cooldown.future.CooldownFuture;
-
 /**
  * Represents a period that a player is forced to wait.
+ *
+ * @param <P> The type of the player.
  */
-public class Cooldown
+public class Cooldown<P>
 {
 	private final Map<UUID, Instant> endDates = new HashMap<>();
-	private CooldownFuture rejectionStrategy;
+	private final UUIDFetcher<P> uuidFetcher;
+	private CooldownFuture<P> rejectionStrategy;
 	private Duration defaultTime;
 
-	private Cooldown(Builder builder)
+	private Cooldown(Builder<P> builder)
 	{
+		this.uuidFetcher = builder.uuidFetcher;
 		this.rejectionStrategy = builder.rejectionStrategy;
 		this.defaultTime = builder.defaultTime;
 	}
 
-	public static Cooldown create() 
-	{
-		return new Builder().build();
-	}
-
 	/**
-	 * Convenient version of {@link #put(UUID, Duration)} that directly accepts the {@code Player}.
+	 * Convenient version of {@link #put(UUID, Duration)} that directly accepts the {@code player}.
 	 */
-	public void put(Player player, Duration time) 
+	public void put(P player, Duration time)
 	{
 		Objects.requireNonNull(player, "The player to put on cooldown must be provided!");
 
-		put(player.getUniqueId(), time);
+		put(fetchUUID(player), time);
 	}
 	
 	/**
@@ -59,13 +52,13 @@ public class Cooldown
 	}
 
 	/**
-	 * Convenient version of {@link #put(UUID)} that directly accepts the {@code Player}.
+	 * Convenient version of {@link #put(UUID)} that directly accepts the {@code player}.
 	 */
-	public void put(Player player)
+	public void put(P player)
 	{
 		Objects.requireNonNull(player, "The player to put on cooldown must be provided!");
 		
-		put(player.getUniqueId());
+		put(fetchUUID(player));
 	}
 	
 	/**
@@ -85,13 +78,13 @@ public class Cooldown
 	}
 
 	/**
-	 * Convenient version of {@link #isOn(UUID)} that directly accepts the {@code Player}.
+	 * Convenient version of {@link #isOn(UUID)} that directly accepts the {@code player}.
 	 */
-	public boolean isOn(Player player)
+	public boolean isOn(P player)
 	{
 		Objects.requireNonNull(player, "The player to check must be provided!");
 		
-		return isOn(player.getUniqueId());
+		return isOn(fetchUUID(player));
 	}
 
 	/**
@@ -110,13 +103,13 @@ public class Cooldown
 	}
 	
 	/**
-	 * Convenient version of {@link #release(UUID)} that directly accepts the {@code Player}.
+	 * Convenient version of {@link #release(UUID)} that directly accepts the {@code player}.
 	 */
-	public void release(Player player)
+	public void release(P player)
 	{
 		Objects.requireNonNull(player, "The player to release must be provided!");
 		
-		release(player.getUniqueId());
+		release(fetchUUID(player));
 	}
 
 	/**
@@ -126,17 +119,17 @@ public class Cooldown
 	 */
 	public void release(UUID playerUUID)
 	{
-		Objects.requireNonNull(playerUUID, "The UUID of the player to release on cooldown must be provided!");
+		Objects.requireNonNull(playerUUID, "The UUID of the player to release must be provided!");
 		
 		this.endDates.remove(playerUUID);
 	}
 
 	/**
-	 * Convenient version of {@link #getTimeLeft(UUID)} that directly accepts the {@code Player}
+	 * Convenient version of {@link #getTimeLeft(UUID)} that directly accepts the {@code player}
 	 */
-	public Optional<Duration> getTimeLeft(Player player)
+	public Optional<Duration> getTimeLeft(P player)
 	{
-		return getTimeLeft(player.getUniqueId());
+		return getTimeLeft(fetchUUID(player));
 	}
 
 	/**
@@ -153,22 +146,19 @@ public class Cooldown
 	}
 
 	/**
-	 * Convenient version of {@link #test(UUID)} that directly accepts the {@code Player}.
+	 * Convenient version of {@link #test(UUID)} that directly accepts the {@code player}.
 	 */
-	public boolean test(Player player)
+	public boolean test(P player)
 	{
-		return test(player.getUniqueId());
+		return test(fetchUUID(player));
 	}
 
 	/**
-	 * If the provided {@code player}(identified by their UUID) is on this cooldown, the rejection strategy is called and true is returned.
-	 * Otherwise, nothing happens and false is returned.
-	 * <p>
-	 * This method differs from {@link #isOn(UUID)} by running the rejection strategy if the player is on cooldown - reducing boilerplate.
+	 * If the provided {@code player}(identified by their UUID) is on this cooldown, the rejection strategy is called and false is returned.
+	 * Otherwise, nothing happens and true is returned because the player had passed the test.
 	 *
-	 * @param playerUUID The uuid of the potentially on cooldown player.
-	 * @return Whether the player was rejected or not.
-	 * @see #getRejectionStrategy()
+	 * @param playerUUID The UUID of the player.
+	 * @return Whether the player has passed the test.
 	 */
 	public boolean test(UUID playerUUID)
 	{
@@ -214,7 +204,7 @@ public class Cooldown
 	 * 
 	 * @return What happens as an object.
 	 */
-	public Optional<CooldownFuture> getRejectionStrategy() 
+	public Optional<CooldownFuture<P>> getRejectionStrategy()
 	{
 		return Optional.ofNullable(this.rejectionStrategy);
 	}
@@ -224,7 +214,7 @@ public class Cooldown
 	 * 
 	 * @param strategy The behavior to use.
 	 */
-	public void setRejectionStrategy(CooldownFuture strategy)
+	public void setRejectionStrategy(CooldownFuture<P> strategy)
 	{
 		this.rejectionStrategy = strategy;
 	}
@@ -241,12 +231,31 @@ public class Cooldown
 		return new HashMap<>(this.endDates);
 	}
 
-
-
-	public static class Builder
+	private UUID fetchUUID(P player)
 	{
-		CooldownFuture rejectionStrategy;
+		UUID uuid = this.uuidFetcher.fetch(player);
+
+		if(uuid == null)
+			throw new IllegalStateException(String.format("Fetching the UUID of %s returned null!", player));
+
+		return uuid;
+	}
+
+
+
+	public static class Builder<P>
+	{
+		UUIDFetcher<P> uuidFetcher;
+		CooldownFuture<P> rejectionStrategy;
 		Duration defaultTime;
+
+		/**
+		 * This constructor accepts platform-specific objects in order to prevent boilerplate in the fluent interface.
+		 */
+		public Builder(UUIDFetcher<P> uuidFetcher)
+		{
+			this.uuidFetcher = uuidFetcher;
+		}
 		
 		/**
 		 * Sets the default time to put players on the cooldown.
@@ -254,7 +263,7 @@ public class Cooldown
 		 * @param defaultTime The default time.
 		 * @return This builder object for chaining purposes.
 		 */
-		public Builder withDefaultTime(Duration defaultTime) 
+		public Builder<P> withDefaultTime(Duration defaultTime)
 		{
 			this.defaultTime = defaultTime;
 			return this;
@@ -266,15 +275,15 @@ public class Cooldown
 		 * @param rejectionStrategy The behavior to use.
 		 * @return This builder object for chaining purposes.
 		 */
-		public Builder rejectsWith(CooldownFuture rejectionStrategy) 
+		public Builder<P> rejectsWith(CooldownFuture<P> rejectionStrategy)
 		{
 			this.rejectionStrategy = rejectionStrategy;
 			return this;
 		}
-		
-		public Cooldown build()
+
+		public Cooldown<P> build()
 		{
-			return new Cooldown(this);
+			return new Cooldown<>(this);
 		}
 	}
 }
