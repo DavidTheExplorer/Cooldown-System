@@ -2,10 +2,10 @@ package dte.cooldownsystem.bukkit.futures;
 
 import java.util.Arrays;
 
+import dte.cooldownsystem.bukkit.utils.DurationFormatter;
 import org.bukkit.entity.Player;
 
 import dte.cooldownsystem.Cooldown;
-import dte.cooldownsystem.bukkit.utils.DurationUtils;
 
 public class MessageFuture extends OnlinePlayerFuture
 {
@@ -31,7 +31,7 @@ public class MessageFuture extends OnlinePlayerFuture
 	private static String describeTimeLeft(Player player, Cooldown<Player> playerCooldown)
 	{
 		return playerCooldown.getTimeLeft(player)
-				.map(DurationUtils::describe)
+				.map(DurationFormatter::format)
 				.get();
 	}
 }
