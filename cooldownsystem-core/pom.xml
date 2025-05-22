@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>dte.cooldownsystem</groupId>
-        <artifactId>parent</artifactId>
+        <groupId>dte</groupId>
+        <artifactId>cooldownsystem-parent</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <artifactId>core</artifactId>
+    <artifactId>cooldownsystem-core</artifactId>
 
 </project>

@@ -5,17 +5,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>dte.cooldownsystem</groupId>
-        <artifactId>parent</artifactId>
+        <groupId>dte</groupId>
+        <artifactId>cooldownsystem-parent</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <artifactId>bukkit</artifactId>
+    <artifactId>cooldownsystem-bukkit</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>dte.cooldownsystem</groupId>
-            <artifactId>core</artifactId>
+            <groupId>dte</groupId>
+            <artifactId>cooldownsystem-core</artifactId>
             <version>${revision}</version>
         </dependency>
 
