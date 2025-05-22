@@ -226,7 +226,7 @@ public class Cooldown<P>
 	 */
 	public Map<UUID, Instant> toMap()
 	{
-		this.endDates.keySet().removeIf(this::isOn);
+		refresh();
 
 		return new HashMap<>(this.endDates);
 	}
@@ -239,6 +239,11 @@ public class Cooldown<P>
 			throw new IllegalStateException(String.format("Fetching the UUID of %s returned null!", player));
 
 		return uuid;
+	}
+
+	private void refresh()
+	{
+		this.endDates.keySet().removeIf(playerUUID -> !isOn(playerUUID));
 	}
 
 
