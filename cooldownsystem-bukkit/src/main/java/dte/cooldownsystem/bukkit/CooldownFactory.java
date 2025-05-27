@@ -1,7 +1,7 @@
 package dte.cooldownsystem.bukkit;
 
 import dte.cooldownsystem.Cooldown;
-import dte.cooldownsystem.UUIDFetcher;
+import dte.cooldownsystem.platform.UUIDFetcher;
 import org.bukkit.entity.Player;
 
 public class CooldownFactory

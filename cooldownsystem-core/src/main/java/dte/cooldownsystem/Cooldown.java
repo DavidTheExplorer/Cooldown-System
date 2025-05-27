@@ -1,5 +1,7 @@
 package dte.cooldownsystem;
 
+import dte.cooldownsystem.platform.UUIDFetcher;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;

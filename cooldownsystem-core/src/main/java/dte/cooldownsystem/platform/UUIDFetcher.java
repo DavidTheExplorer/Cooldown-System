@@ -1,4 +1,6 @@
-package dte.cooldownsystem;
+package dte.cooldownsystem.platform;
+
+import dte.cooldownsystem.Cooldown;
 
 import java.util.UUID;
 
