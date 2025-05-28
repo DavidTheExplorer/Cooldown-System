@@ -3,13 +3,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>dte</groupId>
-	<artifactId>cooldownsystem-parent</artifactId>
+	<artifactId>calmdown-parent</artifactId>
 	<version>${revision}</version>
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>cooldownsystem-core</module>
-		<module>cooldownsystem-bukkit</module>
+		<module>calmdown-core</module>
+		<module>calmdown-bukkit</module>
 	</modules>
 
 	<properties>
