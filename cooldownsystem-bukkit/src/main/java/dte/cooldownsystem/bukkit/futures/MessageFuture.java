@@ -2,7 +2,7 @@ package dte.cooldownsystem.bukkit.futures;
 
 import java.util.Arrays;
 
-import dte.cooldownsystem.bukkit.utils.DurationFormatter;
+import dte.cooldownsystem.utils.DurationFormatter;
 import org.bukkit.entity.Player;
 
 import dte.cooldownsystem.Cooldown;
