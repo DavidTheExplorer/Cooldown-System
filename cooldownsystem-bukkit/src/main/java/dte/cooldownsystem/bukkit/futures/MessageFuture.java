@@ -23,9 +23,11 @@ public class MessageFuture extends OnlinePlayerFuture
 
 	private static String injectPlaceholders(String message, Player player, Cooldown<Player> playerCooldown)
 	{
-		return message
-				.replace("%player%", player.getName())
-				.replace("%time%", describeTimeLeft(player, playerCooldown));
+		if(playerCooldown.isOn(player))
+			message = message.replace("%time%", describeTimeLeft(player, playerCooldown));
+
+		return message.replace("%player%", player.getName());
+
 	}
 
 	private static String describeTimeLeft(Player player, Cooldown<Player> playerCooldown)

@@ -5,6 +5,7 @@ import dte.cooldownsystem.platform.UUIDFetcher;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -19,13 +20,14 @@ public class Cooldown<P>
 {
 	private final Map<UUID, Instant> endDates = new HashMap<>();
 	private final UUIDFetcher<P> uuidFetcher;
-	private CooldownFuture<P> rejectionStrategy;
+	private CooldownFuture<P> rejectionStrategy, whenOver;
 	private Duration defaultTime;
 
 	private Cooldown(Builder<P> builder)
 	{
 		this.uuidFetcher = builder.uuidFetcher;
 		this.rejectionStrategy = builder.rejectionStrategy;
+		this.whenOver = builder.whenOver;
 		this.defaultTime = builder.defaultTime;
 	}
 
@@ -222,6 +224,26 @@ public class Cooldown<P>
 	}
 
 	/**
+	 * Returns what happens when this cooldown is over for a player.
+	 *
+	 * @return What happens as an object.
+	 */
+	public Optional<CooldownFuture<P>> getWhenOver()
+	{
+		return Optional.ofNullable(this.whenOver);
+	}
+
+	/**
+	 * Sets what happens when this cooldown is over for a player.
+	 *
+	 * @param whenOver The behavior to use.
+	 */
+	public void setWhenOver(CooldownFuture<P> whenOver)
+	{
+		this.whenOver = whenOver;
+	}
+
+	/**
 	 * Returns a snapshot of the current players on this cooldown and their remaining times.
 	 * 
 	 * @return The data of this cooldown represented by a map.
@@ -253,15 +275,19 @@ public class Cooldown<P>
 	public static class Builder<P>
 	{
 		UUIDFetcher<P> uuidFetcher;
-		CooldownFuture<P> rejectionStrategy;
+		CooldownFuture<P> rejectionStrategy, whenOver;
 		Duration defaultTime;
+		List<CooldownCreatedListener> creationListeners;
 
 		/**
-		 * This constructor accepts platform-specific objects in order to prevent boilerplate in the fluent interface.
+		 * * For internal usage only.
+		 * <p>
+		 * This constructor accepts internal objects in order to prevent boilerplate in the fluent interface.
 		 */
-		public Builder(UUIDFetcher<P> uuidFetcher)
+		public Builder(UUIDFetcher<P> uuidFetcher, List<CooldownCreatedListener> creationListeners)
 		{
 			this.uuidFetcher = uuidFetcher;
+			this.creationListeners = creationListeners;
 		}
 		
 		/**
@@ -288,9 +314,24 @@ public class Cooldown<P>
 			return this;
 		}
 
+		/**
+		 * Sets what happens when this cooldown is over for a player.
+		 *
+		 * @param whenOver The behavior to use.
+		 * @return This builder object for chaining purposes.
+		 */
+		public Builder<P> whenOver(CooldownFuture<P> whenOver)
+		{
+			this.whenOver = whenOver;
+			return this;
+		}
+
 		public Cooldown<P> build()
 		{
-			return new Cooldown<>(this);
+			Cooldown<P> cooldown = new Cooldown<>(this);
+			this.creationListeners.forEach(listener -> listener.onCreated(cooldown));
+
+			return cooldown;
 		}
 	}
 }
