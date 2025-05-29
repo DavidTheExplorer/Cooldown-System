@@ -28,7 +28,7 @@ public class CooldownFactory<P>
         return cooldownFactory;
     }
 
-    public Cooldown.Builder<P> newCooldown()
+    public Cooldown.Builder<P> newBuilder()
     {
         return new Cooldown.Builder<>(this.uuidFetcher, CREATION_LISTENERS);
     }
