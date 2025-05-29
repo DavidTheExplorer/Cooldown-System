@@ -32,4 +32,9 @@ public class CooldownFactory<P>
     {
         return new Cooldown.Builder<>(this.uuidFetcher, CREATION_LISTENERS);
     }
+
+    public Cooldown<P> newCooldown()
+    {
+        return newBuilder().build();
+    }
 }
